@@ -1,6 +1,8 @@
 package management;
 
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /* Tasks
  * 1. How many male and female are there in the organization?
@@ -40,9 +42,79 @@ public class ManagementSystem {
 		employeeList.add(new Employee(222, "Nitin joshi", 25, "Male", "Product Development", 2015, 28200.0));
 		employeeList.add(new Employee(233, "Jyothi Reddy", 27, "Female", "Account And Finance", 2013, 21300.0));
 		employeeList.add(new Employee(244, "Nicolus Den", 24, "Male", "Sales And Marketing", 2017, 10700.5));
-		employeeList.add(new Employee(255, "Ali Baig", 23, "Male", "Infrastructue", 2018, 12700.0));
+		employeeList.add(new Employee(255, "Ali Baig", 23, "Male", "Infrastructure", 2018, 12700.0));
 		employeeList.add(new Employee(266, "Sanvi Pandey", 26, "Female", "Product Development", 2015, 28900.0));
 		employeeList.add(new Employee(277, "Anuj Chettiar", 31, "Male", "Product Development", 2012, 35700.0));
+		
+		/* 1. NUMBER OF MALE AND FEMALE IN THE ORGANIZATION*/
+		
+		Map<String, Long> noOfMaleAndFemale = employeeList.stream().collect(Collectors.groupingBy(Employee::getGender, Collectors.counting()));
+		
+		System.out.println("1. Total number of male and female in the organization is: ".toUpperCase() + noOfMaleAndFemale + ".\n");
+		
+		/* 2. DEPARTMENTS IN THE ORGANIZATION */
+		
+		System.out.println("2. Departments".toUpperCase());
+		
+		employeeList.stream()
+					.map(Employee::getDepartment)
+					.distinct()
+					.forEach(System.out::println);
+		
+		/* 3. AVERAGE AGE OF ALL MALE AND FEMALE EMPLOYEE */
+		
+		Map<String, Double> avgAgeOfMaleAndFemale = employeeList.stream().collect(Collectors.groupingBy(Employee::getGender, Collectors.averagingInt(Employee::getAge)));
+		
+		System.out.println("\n" + "3. The average age of male and female: ".toUpperCase() + avgAgeOfMaleAndFemale + ".");
+		
+		/* 4. HIGHEST PAID EMPLOYEE IN THE ORGANIZATION */	
+		
+		Optional<Employee> highestPaidEmployeeWrapper = employeeList.stream().collect(Collectors.maxBy(Comparator.comparingDouble(Employee::getSalary)));
+		
+		Employee highestPaidEmployee = highestPaidEmployeeWrapper.get();
+		System.out.println();
+		System.out.println("4. Highest paid employee details:".toUpperCase());
+		System.out.println("=================================");
+		System.out.println("ID: " + highestPaidEmployee.getId());
+		System.out.println("Name: " + highestPaidEmployee.getName());
+		System.out.println("Age: " + highestPaidEmployee.getAge());
+		System.out.println("Gender: " + highestPaidEmployee.getGender());
+		System.out.println("Department: " + highestPaidEmployee.getDepartment());
+		System.out.println("Year Of Joining: " + highestPaidEmployee.getYearOfJoining());
+		System.out.println("Salary: " + highestPaidEmployee.getSalary());
+		
+		/* 5. EMPLOYEES WHO JOINED AFTER 2015 */
+		
+		System.out.println();
+		System.out.println("5. Name of employees who joined after 2015:".toUpperCase());
+		employeeList.stream()
+					.filter(e -> e.getYearOfJoining() > 2015)
+					.map(Employee::getName)
+					.forEach(System.out::println);
+		
+		/* 6. COUNT THE NUMBER OF EMPLOYEE IN EACH DEPARTMENT*/
+		
+		Map<String, Long> employeeCountByDepartment = employeeList.stream().collect(Collectors.groupingBy(Employee::getDepartment, Collectors.counting()));
+		
+		System.out.println();
+		Set<Map.Entry<String, Long>> entrySet = employeeCountByDepartment.entrySet();
+		
+		System.out.println("6. NUMBER OF EMPLOYEE IN EACH DEPARTMENT: ");
+		for (Map.Entry<String, Long> entry : entrySet) {
+			System.out.println(entry.getKey() + " : " + entry.getValue());
+		}
+		
+		/* 7. WHAT IS THE AVERAGE SALARY OF EACH DEPARTMENT?*/
+		
+		Map<String, Double> avgSalaryOfDepartments = employeeList.stream().collect(Collectors.groupingBy(Employee::getDepartment, Collectors.averagingDouble(Employee::getSalary)));
+		
+		System.out.println();
+		Set<Map.Entry<String, Double>> avgSalary = avgSalaryOfDepartments.entrySet();
+		
+		System.out.println("7. AVERAGE SALARY FOR EACH DEPARTMENT");
+		for (Map.Entry<String, Double> salary : avgSalary) {
+			System.out.println(salary.getKey() + " : " + salary.getValue());
+		}
 	}
 
 }
